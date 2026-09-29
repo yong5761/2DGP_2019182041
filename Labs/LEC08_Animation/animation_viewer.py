@@ -19,7 +19,7 @@ DURATION = 5.0
 IDLE = (801, 148)   # 발 y_img=801, 행 경계(y_img=960)와 안전 간격
 WALK = (650, 140)   # 발 y_img=649, h=140으로 Idle 번짐 영역(y_img=790~800) 제외
 RUN  = (505, 130)   # 발 y_img=505, h=130으로 Walk 번짐 영역(y_img=634~640) 제외
-JUMP = (165, 144)   # 발 y_img=162, bottom=165으로 Hurt(y_img=160)에서 5px 여유
+JUMP = (200, 118)   # bottom=200으로 Hurt행 JPEG번짐(y_img≈162~199) 완전 차단
 
 def draw_frame(sheet, bottom, f, x, flip='', frame_h=160):
     clear_canvas()
