@@ -9,70 +9,59 @@ sheet2 = load_image('FreeCharacter-Sprite-Sheets-2.jpg')
 village = load_image('Village.jpg')
 
 FRAME_W  = 144
+FRAME_H  = 148   # 전체 통일 (행 상단 12px 스킵 → 배율 일정)
 OFFSET_X = 370
 CX, CY   = 400, 125
 DRAW_W, DRAW_H = 160, 160
 DURATION = 5.0
 
-# (bottom, frame_h) — 픽셀 스캔 측정값 + 2px 경계 버퍼
-IDLE    = (800, 88)
-WALK    = (650, 148)
-RUN     = (506, 88)
-JUMP    = (162, 154)
-HURT    = (74,  84)
-DEATH   = (802, 84)
-ATTACK1 = (362, 111)
-ATTACK2 = (162, 154)
-ATTACK3 = (74,  84)
-
-def draw_frame(sheet, bottom, f, x, flip='', frame_h=80):
+def draw_frame(sheet, bottom, f, x, flip=''):
     clear_canvas()
     village.draw(400, 300, 800, 600)
     if flip:
         sheet.clip_composite_draw(
-            OFFSET_X + f * FRAME_W, bottom, FRAME_W, frame_h,
+            OFFSET_X + f * FRAME_W, bottom, FRAME_W, FRAME_H,
             0, flip, x, CY, DRAW_W, DRAW_H
         )
     else:
         sheet.clip_draw(
-            OFFSET_X + f * FRAME_W, bottom, FRAME_W, frame_h,
+            OFFSET_X + f * FRAME_W, bottom, FRAME_W, FRAME_H,
             x, CY, DRAW_W, DRAW_H
         )
     update_canvas()
     get_events()
 
-def play_animation(sheet, clip, frame_count, frame_delay=0.1):
-    bottom, frame_h = clip
+def play_animation(sheet, bottom, frame_count, frame_delay=0.1):
     f = 0
     start = time.time()
     while time.time() - start < DURATION:
-        draw_frame(sheet, bottom, f, CX, frame_h=frame_h)
+        draw_frame(sheet, bottom, f, CX)
         delay(frame_delay)
         f = (f + 1) % frame_count
 
-def walk_across(sheet, clip, frame_count, speed):
-    bottom, frame_h = clip
+def walk_across(sheet, bottom, frame_count, speed):
     f = 0
     x = CX
     while x < 720:
-        draw_frame(sheet, bottom, f, x, frame_h=frame_h)
+        draw_frame(sheet, bottom, f, x)
         delay(0.1)
         f = (f + 1) % frame_count
         x += speed
     while x > 80:
-        draw_frame(sheet, bottom, f, x, 'h', frame_h=frame_h)
+        draw_frame(sheet, bottom, f, x, 'h')
         delay(0.1)
         f = (f + 1) % frame_count
         x -= speed
     while x < CX:
-        draw_frame(sheet, bottom, f, x, frame_h=frame_h)
+        draw_frame(sheet, bottom, f, x)
         delay(0.1)
         f = (f + 1) % frame_count
         x += speed
 
-play_animation(sheet1, IDLE,  4)
-walk_across   (sheet1, WALK,  6, 10)
-walk_across   (sheet1, RUN,   6, 20)
-play_animation(sheet1, JUMP,  6)
+# Sheet1
+play_animation(sheet1, 800, 4)   # Idle:  row0
+walk_across   (sheet1, 640, 6, 10)  # Walk:  row1
+walk_across   (sheet1, 480, 6, 20)  # Run:   row2
+play_animation(sheet1, 162, 6)   # Jump:  row4 (bottom+2 → Hurt 경계 블리드 방지)
 
 close_canvas()
