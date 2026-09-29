@@ -22,6 +22,11 @@ RUN  = (505, 130)   # 발 y_img=505, h=130으로 Walk 번짐 영역(y_img=634~64
 JUMP = (200, 118)   # bottom=200으로 Hurt행 JPEG번짐(y_img≈162~199) 완전 차단
 HURT = (  1, 155)   # Row5: 피격 3프레임 (빨간 캐릭터)
 
+# Sheet2 애니메이션 클립 (bottom, frame_h)
+ATTACK1 = (325, 135)  # Row3 Attack1: 6프레임
+ATTACK2 = (165, 130)  # Row4 Attack2: 6프레임
+ATTACK3 = (  5, 150)  # Row5 Attack3: 6프레임
+
 def draw_frame(sheet, bottom, f, x, flip='', frame_h=160):
     clear_canvas()
     village.draw(400, 300, 800, 600)
@@ -62,5 +67,8 @@ walk_across   (sheet1, WALK, 6, 10)
 walk_across   (sheet1, RUN,  6, 20)
 play_animation(sheet1, JUMP, 6)
 play_animation(sheet1, HURT, 3)
+play_animation(sheet2, ATTACK1, 6)
+play_animation(sheet2, ATTACK2, 6)
+play_animation(sheet2, ATTACK3, 6)
 
 close_canvas()
