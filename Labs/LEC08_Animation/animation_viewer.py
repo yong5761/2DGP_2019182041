@@ -62,6 +62,6 @@ def walk_across(sheet, bottom, frame_count, speed):
 play_animation(sheet1, 800, 4)   # Idle:  row0
 walk_across   (sheet1, 640, 6, 10)  # Walk:  row1
 walk_across   (sheet1, 480, 6, 20)  # Run:   row2
-play_animation(sheet1, 162, 6)   # Jump:  row4 (bottom+2 → Hurt 경계 블리드 방지)
+play_animation(sheet1, 168, 6)   # Jump:  row4 (bottom+8 → Hurt 경계 JPEG 블리드 방지)
 
 close_canvas()
