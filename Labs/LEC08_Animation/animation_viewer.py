@@ -10,7 +10,7 @@ village = load_image('Village.jpg')
 
 FRAME_W, FRAME_H = 144, 100
 OFFSET_X = 370
-CX, CY = 400, 140
+CX, CY = 400, 125
 DRAW_W, DRAW_H = 160, 160
 DURATION = 5.0
 
