@@ -14,11 +14,12 @@ CX, CY   = 400, 130
 DRAW_W, DRAW_H = 160, 160
 DURATION = 5.0
 
-# 행 전체 높이 160px 사용 — 투명 PNG이므로 회색 영역이 사라짐
-IDLE = (800, 160)
-WALK = (640, 160)
-RUN  = (480, 160)
-JUMP = (162, 158)   # Hurt 경계(y_img=160)에서 2px 위
+# 픽셀스캔 기준 실제 발 위치 → 모든 애니메이션 발이 화면 동일 높이에 위치
+# 투명 PNG이므로 h=150 내 빈 공간은 그냥 배경이 보임 (회색박스 없음)
+IDLE = (801, 150)   # 발 y_img=801
+WALK = (650, 150)   # 발 y_img=650
+RUN  = (505, 135)   # 발 y_img=505, 행 상단(y_img=640)까지 135px
+JUMP = (161, 150)   # 발 y_img=161, Hurt(160)와 같은 빨간색 → 1px JPEG 번짐 무시 가능
 
 def draw_frame(sheet, bottom, f, x, flip='', frame_h=160):
     clear_canvas()
