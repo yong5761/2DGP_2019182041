@@ -4,25 +4,23 @@ from pico2d import *
 
 open_canvas()
 
-sheet1 = load_image('FreeCharacter-Sprite-Sheets-1.jpg')
-sheet2 = load_image('FreeCharacter-Sprite-Sheets-2.jpg')
+sheet1  = load_image('sheet1.png')   # 배경 투명 PNG
+sheet2  = load_image('sheet2.png')
 village = load_image('Village.jpg')
 
 FRAME_W  = 144
 OFFSET_X = 370
 CX, CY   = 400, 130
-DRAW_W   = 160
-DRAW_H   = 160
+DRAW_W, DRAW_H = 160, 160
 DURATION = 5.0
 
-# frame_h = FRAME_W(144) 기준 → 가로세로 동일 배율(1.11x) → 왜곡 없음
-# Walk만 150 (전체 캐릭터 캡처), Run은 행 경계(640) 초과 방지로 135
-IDLE = (801, 144)   # 발 y_img=801
-WALK = (650, 150)   # 발 y_img=650, 캐릭터 150px 전체 포함
-RUN  = (505, 135)   # 발 y_img=505, 행 상단(y_img=640)까지 135px
-JUMP = (163, 144)   # 발(161)에서 2px 위, Hurt 경계(160)에서 3px 보호
+# 행 전체 높이 160px 사용 — 투명 PNG이므로 회색 영역이 사라짐
+IDLE = (800, 160)
+WALK = (640, 160)
+RUN  = (480, 160)
+JUMP = (162, 158)   # Hurt 경계(y_img=160)에서 2px 위
 
-def draw_frame(sheet, bottom, f, x, flip='', frame_h=144):
+def draw_frame(sheet, bottom, f, x, flip='', frame_h=160):
     clear_canvas()
     village.draw(400, 300, 800, 600)
     if flip:
