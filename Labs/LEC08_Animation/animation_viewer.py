@@ -5,17 +5,17 @@ open_canvas()
 sheet1 = load_image('FreeCharacter-Sprite-Sheets-1.jpg')
 sheet2 = load_image('FreeCharacter-Sprite-Sheets-2.jpg')
 
-grass = load_image('grass.png')
+village = load_image('Village.jpg')
 
-FRAME_W, FRAME_H = 144, 160
+FRAME_W, FRAME_H = 144, 100
 OFFSET_X = 370
-CX, CY = 400, 211
+CX, CY = 400, 252
 DRAW_W, DRAW_H = 300, 300
 
 # Idle: sheet1 row0, 4 frames, bottom=800
 for f in range(4):
     clear_canvas()
-    grass.draw(400, 30)
+    village.draw(400, 300, 800, 600)
     sheet1.clip_draw(OFFSET_X + f * FRAME_W, 800, FRAME_W, FRAME_H, CX, CY, DRAW_W, DRAW_H)
     update_canvas()
     delay(0.1)
