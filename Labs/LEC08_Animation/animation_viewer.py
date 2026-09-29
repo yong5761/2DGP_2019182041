@@ -26,6 +26,7 @@ HURT = (  1, 155)   # Row5: 피격 3프레임 (빨간 캐릭터)
 ATTACK1 = (325, 135)  # Row3 Attack1: 6프레임
 ATTACK2 = (165, 130)  # Row4 Attack2: 6프레임
 ATTACK3 = (  5, 150)  # Row5 Attack3: 6프레임
+DEATH   = (805, 145)  # Row0 Death:   6프레임
 
 def draw_frame(sheet, bottom, f, x, flip='', frame_h=160):
     clear_canvas()
@@ -41,10 +42,10 @@ def draw_frame(sheet, bottom, f, x, flip='', frame_h=160):
     update_canvas()
     get_events()
 
-def play_animation(sheet, clip, frame_count, frame_delay=0.1):
+def play_animation(sheet, clip, frame_count, frame_delay=0.1, duration=DURATION):
     bottom, frame_h = clip
     f, start = 0, time.time()
-    while time.time() - start < DURATION:
+    while time.time() - start < duration:
         draw_frame(sheet, bottom, f, CX, frame_h=frame_h)
         delay(frame_delay)
         f = (f + 1) % frame_count
@@ -70,5 +71,6 @@ play_animation(sheet1, HURT, 3)
 play_animation(sheet2, ATTACK1, 6)
 play_animation(sheet2, ATTACK2, 6)
 play_animation(sheet2, ATTACK3, 6)
+play_animation(sheet2, DEATH,   6, duration=3.0)
 
 close_canvas()
