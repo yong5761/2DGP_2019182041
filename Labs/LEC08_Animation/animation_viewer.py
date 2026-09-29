@@ -63,10 +63,10 @@ def walk_across(sheet, bottom, frame_count, speed):
 # Idle: sheet1 row0, 4 frames, bottom=800
 play_animation(sheet1, 800, 4)
 
-# Walk: sheet1 row1, 6 frames, bottom=640 (중앙→우→좌→중앙, speed=5)
-walk_across(sheet1, 640, 6, 5)
+# Walk: sheet1 row1, 6 frames, bottom=640 (중앙→우→좌→중앙, speed=10)
+walk_across(sheet1, 640, 6, 10)
 
 # Run: sheet1 row2, 6 frames, bottom=480 (Walk과 같은 경로, 2배 속도)
-walk_across(sheet1, 480, 6, 10)
+walk_across(sheet1, 480, 6, 20)
 
 close_canvas()
