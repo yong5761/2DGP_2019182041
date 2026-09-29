@@ -8,7 +8,7 @@ sheet1 = load_image('FreeCharacter-Sprite-Sheets-1.jpg')
 sheet2 = load_image('FreeCharacter-Sprite-Sheets-2.jpg')
 village = load_image('Village.jpg')
 
-FRAME_W, FRAME_H = 144, 155
+FRAME_W, FRAME_H = 144, 148
 OFFSET_X = 370
 CX, CY = 400, 125
 DRAW_W, DRAW_H = 160, 160
