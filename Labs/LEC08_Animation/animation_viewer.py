@@ -7,9 +7,9 @@ sheet2 = load_image('FreeCharacter-Sprite-Sheets-2.jpg')
 
 village = load_image('Village.jpg')
 
-FRAME_W, FRAME_H = 80, 80
-OFFSET_X = 404
-CX, CY = 400, 202
+FRAME_W, FRAME_H = 144, 100
+OFFSET_X = 370
+CX, CY = 400, 182
 DRAW_W, DRAW_H = 160, 160
 
 # Idle: sheet1 row0, 4 frames, bottom=800
