@@ -14,16 +14,50 @@ CX, CY = 400, 125
 DRAW_W, DRAW_H = 160, 160
 DURATION = 5.0
 
-def play_animation(sheet, bottom, frame_count):
+def draw_frame(sheet, bottom, f, x, flip=''):
+    clear_canvas()
+    village.draw(400, 300, 800, 600)
+    if flip:
+        sheet.clip_composite_draw(
+            OFFSET_X + f * FRAME_W, bottom, FRAME_W, FRAME_H,
+            0, flip, x, CY, DRAW_W, DRAW_H
+        )
+    else:
+        sheet.clip_draw(
+            OFFSET_X + f * FRAME_W, bottom, FRAME_W, FRAME_H,
+            x, CY, DRAW_W, DRAW_H
+        )
+    update_canvas()
+
+def play_animation(sheet, bottom, frame_count, frame_delay=0.1):
     f = 0
     start = time.time()
     while time.time() - start < DURATION:
-        clear_canvas()
-        village.draw(400, 300, 800, 600)
-        sheet.clip_draw(OFFSET_X + f * FRAME_W, bottom, FRAME_W, FRAME_H, CX, CY, DRAW_W, DRAW_H)
-        update_canvas()
+        draw_frame(sheet, bottom, f, CX)
+        delay(frame_delay)
+        f = (f + 1) % frame_count
+
+def walk_across(sheet, bottom, frame_count, speed):
+    f = 0
+    x = CX
+    # 중앙 → 우
+    while x < 720:
+        draw_frame(sheet, bottom, f, x)
         delay(0.1)
         f = (f + 1) % frame_count
+        x += speed
+    # 우 → 좌 (반전)
+    while x > 80:
+        draw_frame(sheet, bottom, f, x, 'h')
+        delay(0.1)
+        f = (f + 1) % frame_count
+        x -= speed
+    # 좌 → 중앙
+    while x < CX:
+        draw_frame(sheet, bottom, f, x)
+        delay(0.1)
+        f = (f + 1) % frame_count
+        x += speed
 
 # Idle: sheet1 row0, 4 frames, bottom=800
 play_animation(sheet1, 800, 4)
