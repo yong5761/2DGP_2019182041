@@ -69,4 +69,7 @@ walk_across(sheet1, 640, 6, 10)
 # Run: sheet1 row2, 6 frames, bottom=480 (Walk과 같은 경로, 2배 속도)
 walk_across(sheet1, 480, 6, 20)
 
+# Jump: sheet1 row4, 6 frames, bottom=160
+play_animation(sheet1, 160, 6)
+
 close_canvas()
