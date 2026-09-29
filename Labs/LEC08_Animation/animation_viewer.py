@@ -63,14 +63,13 @@ def walk_across(sheet, clip, frame_count, speed):
         draw_frame(sheet, bottom, f, x, frame_h=frame_h)
         delay(0.1); f = (f + 1) % frame_count; x += speed
 
-play_animation(sheet1, IDLE, 4)
-walk_across   (sheet1, WALK, 6, 10)
-walk_across   (sheet1, RUN,  6, 20)
-play_animation(sheet1, JUMP, 6)
-play_animation(sheet1, HURT, 3)
-play_animation(sheet2, ATTACK1, 6)
-play_animation(sheet2, ATTACK2, 6)
-play_animation(sheet2, ATTACK3, 6)
-play_animation(sheet2, DEATH,   6, duration=3.0)
-
-close_canvas()
+while True:
+    play_animation(sheet1, IDLE,    4)
+    walk_across   (sheet1, WALK,    6, 10)
+    walk_across   (sheet1, RUN,     6, 20)
+    play_animation(sheet1, JUMP,    6)
+    play_animation(sheet1, HURT,    3)
+    play_animation(sheet2, ATTACK1, 6)
+    play_animation(sheet2, ATTACK2, 6)
+    play_animation(sheet2, ATTACK3, 6)
+    play_animation(sheet2, DEATH,   6, duration=3.0)
