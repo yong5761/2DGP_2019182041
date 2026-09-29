@@ -28,6 +28,7 @@ def draw_frame(sheet, bottom, f, x, flip=''):
             x, CY, DRAW_W, DRAW_H
         )
     update_canvas()
+    get_events()  # OS 이벤트 처리 (응답없음 방지)
 
 def play_animation(sheet, bottom, frame_count, frame_delay=0.1):
     f = 0
