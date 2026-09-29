@@ -28,8 +28,8 @@ HURT = (  1, 155)   # Row5: Hurt  3프레임
 
 # Sheet2 클립 (bottom, frame_h)
 DEATH   = (805, 145)  # Row0 Death:   6프레임
-ATTACK1 = (325, 135)  # Row3 Attack1: 6프레임
-ATTACK2 = (165, 130)  # Row4 Attack2: 6프레임
+ATTACK1 = (325, 150)  # Row3 Attack1: 6프레임 (fh 135→150, 머리 잘림 수정)
+ATTACK2 = (167, 146)  # Row4 Attack2: 6프레임 (bot 165→167 번짐 차단, fh 130→146 머리 수정)
 ATTACK3 = (  5, 150)  # Row5 Attack3: 6프레임
 
 def draw_frame(sheet, bottom, f, x, flip='', frame_h=160, fw=FRAME_W, off_x=OFFSET_X):
