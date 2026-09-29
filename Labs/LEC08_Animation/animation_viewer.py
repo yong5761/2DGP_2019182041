@@ -20,6 +20,7 @@ IDLE = (801, 148)   # 발 y_img=801, 행 경계(y_img=960)와 안전 간격
 WALK = (650, 140)   # 발 y_img=649, h=140으로 Idle 번짐 영역(y_img=790~800) 제외
 RUN  = (505, 130)   # 발 y_img=505, h=130으로 Walk 번짐 영역(y_img=634~640) 제외
 JUMP = (200, 118)   # bottom=200으로 Hurt행 JPEG번짐(y_img≈162~199) 완전 차단
+HURT = (  1, 155)   # Row5: 피격 3프레임 (빨간 캐릭터)
 
 def draw_frame(sheet, bottom, f, x, flip='', frame_h=160):
     clear_canvas()
@@ -60,5 +61,6 @@ play_animation(sheet1, IDLE, 4)
 walk_across   (sheet1, WALK, 6, 10)
 walk_across   (sheet1, RUN,  6, 20)
 play_animation(sheet1, JUMP, 6)
+play_animation(sheet1, HURT, 3)
 
 close_canvas()
