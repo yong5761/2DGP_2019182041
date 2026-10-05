@@ -4,6 +4,10 @@ CANVAS_W, CANVAS_H = 1200, 800
 CX, CY = 600, 400
 SCALE  = 3
 
+# Run / Skate Run: 프레임 간격이 불균일해 x_starts를 직접 지정
+RUN_X   = [8, 37, 65, 97, 135, 170, 206, 238, 263, 295, 334, 370]
+SKATE_X = [1, 31, 64,  99, 136, 176, 217, 254]
+
 # (name, pico_bot, fh, x_off, fw, frame_count, delay)
 ANIMATIONS = [
     ('Walk',         447, 39,   1, 30, 11, 0.10),
@@ -26,11 +30,25 @@ def draw_frame(pico_bot, fh, x_off, fw, frame_idx):
     image.clip_draw(clip_x, pico_bot, fw, fh,
                     CX, CY, fw * SCALE, fh * SCALE)
 
+def draw_frame_at(pico_bot, fh, fw, clip_x):
+    image.clip_draw(clip_x, pico_bot, fw, fh,
+                    CX, CY, fw * SCALE, fh * SCALE)
+
 def play_once(anim):
-    _, pico_bot, fh, x_off, fw, frame_count, frame_delay = anim
+    name, pico_bot, fh, x_off, fw, frame_count, frame_delay = anim
+    if name == 'Run':
+        xs = RUN_X
+    elif name == 'Skate Run':
+        xs = SKATE_X
+    else:
+        xs = None
+
     for f in range(frame_count):
         clear_canvas()
-        draw_frame(pico_bot, fh, x_off, fw, f)
+        if xs:
+            draw_frame_at(pico_bot, fh, fw, xs[f])
+        else:
+            draw_frame(pico_bot, fh, x_off, fw, f)
         update_canvas()
         delay(frame_delay)
         get_events()
