@@ -54,17 +54,24 @@ def draw_frame(pico_bot, fh, clip_x, fw, draw_x=None):
                     x, CY, fw * SCALE, fh * SCALE)
 
 
-def play_once(anim):
+def play_once(anim, start_x=None):
     name, pico_bot, fh, x_off, fw, frame_count, frame_delay = anim
-    xs = FRAME_X.get(name)
+    xs    = FRAME_X.get(name)
+    speed = MOVING_SPEED.get(name, 0)
+    x     = start_x if (speed and start_x is not None) else (-(fw * SCALE) // 2 if speed else CX)
     for f in range(frame_count):
         clip_x = xs[f] if xs else x_off + f * fw
         clear_canvas()
-        draw_frame(pico_bot, fh, clip_x, fw)
+        draw_frame(pico_bot, fh, clip_x, fw, x if speed else None)
         font.draw(20, CANVAS_H - 20, name, (255, 255, 0))
         update_canvas()
         delay(frame_delay)
         handle_events()
+        if speed:
+            x += speed
+            if x > CANVAS_W + fw * SCALE // 2:
+                x = -(fw * SCALE) // 2
+    return x
 
 
 def play_animation(anim, repeat=5, pause_sec=1.0):
