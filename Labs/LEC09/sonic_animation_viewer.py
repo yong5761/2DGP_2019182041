@@ -57,6 +57,7 @@ def play_once(anim):
             draw_frame_at(pico_bot, fh, fw, xs[f])
         else:
             draw_frame(pico_bot, fh, x_off, fw, f)
+        draw_text(20, CANVAS_H - 30, name)
         update_canvas()
         delay(frame_delay)
         handle_events()
