@@ -12,6 +12,15 @@ def draw_frame(pico_bot, fh, x_off, fw, frame_idx):
     image.clip_draw(clip_x, pico_bot, fw, fh,
                     CX, CY, fw * SCALE, fh * SCALE)
 
+def play_once(anim):
+    _, pico_bot, fh, x_off, fw, frame_count, frame_delay = anim
+    for f in range(frame_count):
+        clear_canvas()
+        draw_frame(pico_bot, fh, x_off, fw, f)
+        update_canvas()
+        delay(frame_delay)
+        get_events()
+
 open_canvas(CANVAS_W, CANVAS_H)
 
 image = load_image('sonic-sprite.png')
