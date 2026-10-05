@@ -7,6 +7,7 @@ SCALE  = 3
 # (name, pico_bot, fh, x_off, fw, frame_count, delay)
 ANIMATIONS = [
     ('Walk',         447, 39,   1, 30, 11, 0.10),
+    ('Run',          407, 39,   8, 33, 12, 0.07),
 ]
 
 def draw_frame(pico_bot, fh, x_off, fw, frame_idx):
