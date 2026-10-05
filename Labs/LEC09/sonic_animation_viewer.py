@@ -17,6 +17,8 @@ ANIMATIONS = [
     ('Idle',         154, 45,   1, 30,  6, 0.12),
     ('Hurt',         154, 45, 184, 48,  2, 0.10),
     ('Skate Run',    108, 40,   1, 36,  8, 0.07),
+    ('Victory',       56, 43,   6, 47,  2, 0.15),
+    ('Standing',      56, 43,  96, 29,  2, 0.20),
 ]
 
 def draw_frame(pico_bot, fh, x_off, fw, frame_idx):
