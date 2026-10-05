@@ -4,7 +4,7 @@
 
 ## 개요
 
-Classic Sonic 스프라이트 시트(`sonic-sprite.png`)에 담긴 모든 애니메이션을 순서대로 자동 재생하는 뷰어.  
+Classic Sonic 스프라이트 시트(`sonic-sprite.png`)에 담긴 모든 애니메이션을 순서대로 자동 재생하는 뷰어.
 각 동작을 5회 반복 후 1초 정지, 전체 순환이 끝나면 처음부터 무한 반복한다.
 
 ---
@@ -22,138 +22,176 @@ Classic Sonic 스프라이트 시트(`sonic-sprite.png`)에 담긴 모든 애니
 
 ## 화면 설정
 
-- 캔버스 크기: **800 × 600**
-- 배경: 단색 (검정 또는 짙은 파랑)
-- 소닉 렌더 크기: 원본 프레임 크기 × **3배** 확대 (화면에서 명확히 보이도록)
+- 캔버스 크기: **1200 × 800**
+- 배경: 단색 (검정)
+- 소닉 렌더 크기: 원본 프레임 크기 × **3배** 확대
 - 렌더 위치: 화면 중앙 (400, 300)
 
 ---
 
-## 스프라이트 시트 분석
+## 스프라이트 시트 실측 데이터
 
-`sonic-sprite.png` 는 Classic Sonic Sprites 시트로, 행(Row) 단위로 동작이 나뉜다.  
-구현 전 `PIL` 또는 육안으로 각 행의 **y 좌표(top)**, **프레임 폭**, **프레임 높이**, **프레임 수**를 실측한다.
+이미지 크기: **399 × 525 px (RGBA)**
 
-| # | 동작명 | 설명 | 프레임 수(예상) |
-|---|--------|------|----------------|
-| 1 | Run | 달리기 (1단계 속도) | 8 |
-| 2 | Run Fast | 달리기 (2단계 속도) | 8 |
-| 3 | Spin Dash | 스핀 대시 차지 | 8 |
-| 4 | Ball Roll | 공 구르기 | 8 |
-| 5 | Spin Attack | 링 스핀 공격 | 8 |
-| 6 | Super Spin | 상위 스핀 변형 | 8 |
-| 7 | Idle | 대기 포즈 | 6 |
-| 8 | Hurt | 피격 | 4 |
+pico2d는 **좌하단 원점** 좌표계를 사용한다.  
+`pico_bot = 524 - PIL_bottom` (PIL y는 상단이 0)
 
-> **주의:** 위 값은 초기 추정치다. 구현 Step 2(시트 분석 커밋)에서 실제 픽셀 좌표로 교체한다.
+### 좌표 테이블
+
+| # | 동작 | pico_bot | fh | x_off | fw | frames | delay(s) | 비고 |
+|---|------|----------|----|----|----|----|-------|------|
+| 1 | Walk | 447 | 39 | 1 | 30 | 11 | 0.10 | 일부 프레임 인접, fw 미세조정 필요 |
+| 2 | Run | 407 | 39 | 8 | 33 | 12 | 0.07 | 간격 불균일, 구현 시 검증 필요 |
+| 3 | Run Fast | 361 | 43 | 1 | 43 | 6 | 0.06 | 슬래시 이펙트 포함 |
+| 4 | Spin Dash | 325 | 33 | 1 | 33 | 9 | 0.05 | 균일 |
+| 5 | Ball Roll | 292 | 27 | 1 | 35 | 6 | 0.06 | 균일 |
+| 6 | Insta-Shield | 251 | 36 | 1 | 37 | 6 | 0.06 | 균일 |
+| 7 | Spin (small) | 207 | 35 | 1 | 35 | 2 | 0.08 | Row 7 전반부 |
+| 8 | Spin Attack | 207 | 35 | 72 | 50 | 4 | 0.07 | Row 7 후반부 (링 이펙트) |
+| 9 | Idle | 154 | 45 | 1 | 30 | 6 | 0.12 | Row 8 전반부 |
+| 10 | Hurt | 154 | 45 | 184 | 48 | 2 | 0.10 | Row 8 후반부 |
+| 11 | Skate Run | 108 | 40 | 1 | 36 | 8 | 0.07 | 간격 불균일 |
+| 12 | Victory | 56 | 43 | 6 | 47 | 2 | 0.15 | Row 10 전반부 |
+| 13 | Standing | 56 | 43 | 96 | 29 | 2 | 0.20 | Row 10 후반부 |
+
+### Row 2 / 11 실측 x_starts (불균일 행 참고용)
+
+```
+Run   (Row 2): x_starts = [8, 37, 65, 97, 135, 170, 206, 238, 263, 295, 334, 370]
+Skate (Row11): x_starts = [1, 31, 64,  99, 136, 176, 217, 254]
+```
+
+> 불균일 행은 `clip_draw(x_starts[f], pico_bot, fw, fh, ...)` 방식으로
+> 각 프레임의 정확한 x를 직접 지정하면 된다.
 
 ---
 
 ## 재생 로직
 
 ```
-for each animation in ANIMATION_LIST:
-    for repeat in range(5):          # 5회 반복
-        play_animation(animation)
-    pause(1.0)                       # 1초 정지
+for each animation in ANIMATIONS:
+    for _ in range(5):          # 5회 반복
+        play_once(animation)
+    delay(1.0)                  # 1초 정지
 
-→ 전체 완료 시 처음으로 돌아가 무한 반복
+→ 전체 완료 후 처음으로 돌아가 무한 반복
 ```
 
-- `play_animation`: 한 사이클(프레임 0 → 마지막) 을 1회 재생
-- 프레임 간격(frame_delay): 기본 `0.08`초 (동작별로 조정 가능)
+- `play_once`: 프레임 0 → 마지막을 1사이클 재생
+- 프레임 간격: 동작별 delay 값 사용
 
 ---
 
-## 함수 설계
+## 코드 설계
 
 ```python
-# 상수
-CANVAS_W, CANVAS_H = 800, 600
-SCALE = 3          # 확대 배율
-FPS_DELAY = 0.08   # 기본 프레임 간격
+CANVAS_W, CANVAS_H = 1200, 800
+CX, CY = 600, 400
+SCALE  = 3
+H_IMG  = 525          # 이미지 높이 (pico_bot 계산 기준)
 
-# 데이터 구조: 각 애니메이션 클립
-# (name, row_top, frame_w, frame_h, frame_count, frame_delay)
+# (name, pico_bot, fh, x_off, fw, frame_count, delay)
 ANIMATIONS = [
-    ('Run',         ..., ..., ..., 8, 0.08),
-    ('Run Fast',    ..., ..., ..., 8, 0.06),
-    ('Spin Dash',   ..., ..., ..., 8, 0.07),
-    ('Ball Roll',   ..., ..., ..., 8, 0.08),
-    ('Spin Attack', ..., ..., ..., 8, 0.07),
-    ('Super Spin',  ..., ..., ..., 8, 0.07),
-    ('Idle',        ..., ..., ..., 6, 0.12),
-    ('Hurt',        ..., ..., ..., 4, 0.10),
+    ('Walk',         447, 39,   1, 30, 11, 0.10),
+    ('Run',          407, 39,   8, 33, 12, 0.07),
+    ('Run Fast',     361, 43,   1, 43,  6, 0.06),
+    ('Spin Dash',    325, 33,   1, 33,  9, 0.05),
+    ('Ball Roll',    292, 27,   1, 35,  6, 0.06),
+    ('Insta-Shield', 251, 36,   1, 37,  6, 0.06),
+    ('Spin (small)', 207, 35,   1, 35,  2, 0.08),
+    ('Spin Attack',  207, 35,  72, 50,  4, 0.07),
+    ('Idle',         154, 45,   1, 30,  6, 0.12),
+    ('Hurt',         154, 45, 184, 48,  2, 0.10),
+    ('Skate Run',    108, 40,   1, 36,  8, 0.07),
+    ('Victory',       56, 43,   6, 47,  2, 0.15),
+    ('Standing',      56, 43,  96, 29,  2, 0.20),
 ]
 
-def draw_frame(image, top, frame_w, frame_h, frame_idx):
-    """스프라이트 시트에서 단일 프레임을 확대해 중앙에 그린다."""
+def draw_frame(image, pico_bot, fh, x_off, fw, frame_idx):
+    """단일 프레임을 pico2d clip_draw로 SCALE배 확대해 중앙에 그린다."""
+    clip_x = x_off + frame_idx * fw
+    image.clip_draw(clip_x, pico_bot, fw, fh,
+                    CX, CY, fw * SCALE, fh * SCALE)
 
-def play_once(image, clip):
-    """클립을 1회 재생한다."""
+def play_once(image, anim):
+    name, pico_bot, fh, x_off, fw, frame_count, frame_delay = anim
+    for f in range(frame_count):
+        clear_canvas()
+        draw_frame(image, pico_bot, fh, x_off, fw, f)
+        update_canvas()
+        delay(frame_delay)
+        get_events()
 
-def play_animation(image, clip, repeat=5, pause_sec=1.0):
-    """클립을 repeat회 재생 후 pause_sec 정지한다."""
+def play_animation(image, anim, repeat=5, pause_sec=1.0):
+    for _ in range(repeat):
+        play_once(image, anim)
+    delay(pause_sec)
 ```
 
 ---
 
-## 커밋 계획 (최소 20개)
+## 커밋 계획 (26개)
 
-### Phase 1 — 프로젝트 뼈대
+> 모든 커밋 메시지는 **한글**로 작성한다.
 
-| 커밋 | 내용 |
-|------|------|
-| 01 | `sonic_animation_viewer.py` 파일 생성, `open_canvas` 호출, 캔버스 상수 정의 |
-| 02 | `sonic-sprite.png` 로드 및 빈 게임 루프(`while True` + `get_events`) 추가 |
-| 03 | 배경 클리어 및 `update_canvas` 호출로 빈 화면 정상 렌더 확인 |
-
-### Phase 2 — 스프라이트 시트 분석
+### Phase 1 — 뼈대
 
 | 커밋 | 내용 |
 |------|------|
-| 04 | 시트 각 행의 픽셀 좌표 주석으로 문서화, `ANIMATIONS` 리스트 뼈대 추가 |
-| 05 | `draw_frame` 함수 구현 (clip_draw + 배율 적용) |
+| 01 | 파일 생성, 캔버스 상수 정의, `open_canvas` 호출 |
+| 02 | 스프라이트 시트 로드 및 빈 게임 루프 (`while True` + `get_events`) |
+| 03 | `clear_canvas` / `update_canvas` 호출로 빈 화면 정상 렌더 확인 |
 
-### Phase 3 — 애니메이션별 클립 등록 & 검증
-
-| 커밋 | 내용 |
-|------|------|
-| 06 | Run 클립 좌표 확정 및 단독 재생 테스트 |
-| 07 | Run Fast 클립 추가 |
-| 08 | Spin Dash 클립 추가 |
-| 09 | Ball Roll 클립 추가 |
-| 10 | Spin Attack 클립 추가 |
-| 11 | Super Spin 클립 추가 |
-| 12 | Idle 클립 추가 |
-| 13 | Hurt 클립 추가 |
-
-### Phase 4 — 재생 제어 로직
+### Phase 2 — 렌더 기반
 
 | 커밋 | 내용 |
 |------|------|
-| 14 | `play_once` 함수 구현 (단일 사이클 재생) |
-| 15 | `play_animation` 함수 구현 (5회 반복 + 1초 정지) |
-| 16 | 전체 `ANIMATIONS` 순환 루프 구현 |
-| 17 | 무한 반복(`while True`) 적용 및 동작 확인 |
+| 04 | SCALE·CX·CY 상수 및 `ANIMATIONS` 리스트 뼈대 추가 |
+| 05 | `draw_frame` 함수 구현 (clip_draw + SCALE 적용) |
+| 06 | `play_once` 함수 구현 |
+| 07 | `play_animation` 함수 구현 (5회 반복 + 1초 정지) |
 
-### Phase 5 — 화면 품질 & 마무리
+### Phase 3 — 애니메이션 클립 등록
 
 | 커밋 | 내용 |
 |------|------|
-| 18 | 확대 배율(SCALE) 상수화 및 중앙 좌표 계산 정리 |
-| 19 | 동작별 `frame_delay` 개별 튜닝 (Run Fast 속도 증가 등) |
-| 20 | 현재 동작명 화면 상단에 텍스트 출력 (`draw_text`) |
-| 21 | 이벤트 처리 강화 (ESC 키 → 종료) |
-| 22 | 코드 정리 및 최종 주석 정비 |
+| 08 | Walk 클립 추가 및 단독 재생 확인 |
+| 09 | Run 클립 추가 |
+| 10 | Run Fast 클립 추가 |
+| 11 | Spin Dash 클립 추가 |
+| 12 | Ball Roll 클립 추가 |
+| 13 | Insta-Shield 클립 추가 |
+| 14 | Spin (small) 클립 추가 |
+| 15 | Spin Attack 클립 추가 |
+| 16 | Idle 클립 추가 |
+| 17 | Hurt 클립 추가 |
+| 18 | Skate Run 클립 추가 |
+| 19 | Victory 클립 추가 |
+| 20 | Standing 클립 추가 |
+
+### Phase 4 — 전체 순환 루프
+
+| 커밋 | 내용 |
+|------|------|
+| 21 | 전체 `ANIMATIONS` 순환 루프 구현 |
+| 22 | 무한 반복 (`while True`) 적용 및 동작 확인 |
+
+### Phase 5 — 품질 & 마무리
+
+| 커밋 | 내용 |
+|------|------|
+| 23 | 불균일 행(Run, Skate) 좌표 미세조정 |
+| 24 | 동작별 `delay` 튜닝 |
+| 25 | 현재 동작명 화면 상단 출력 |
+| 26 | ESC 키 종료 처리 및 코드 정리 |
 
 ---
 
 ## 완료 기준
 
-- [ ] 모든 애니메이션 클립이 잘린 프레임 없이 재생된다
+- [ ] 13개 애니메이션 클립이 모두 잘린 프레임 없이 재생된다
 - [ ] 각 동작이 정확히 5회 반복 후 1초 정지된다
 - [ ] 전체 순환 후 자동으로 처음부터 재시작된다
-- [ ] 소닉이 화면 중앙에 명확하게 확대되어 표시된다
+- [ ] 소닉이 화면 중앙에 3배 확대되어 표시된다
 - [ ] ESC 키로 종료할 수 있다
 - [ ] 단일 파일(`sonic_animation_viewer.py`)로 실행 가능하다
