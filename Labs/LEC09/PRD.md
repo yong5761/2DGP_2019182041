@@ -66,18 +66,37 @@ Skate (Row11): x_starts = [1, 31, 64,  99, 136, 176, 217, 254]
 
 ---
 
+## 이동 동작 사양
+
+이동이 포함된 동작은 화면 중앙 고정이 아니라 왼쪽→오른쪽으로 실제 이동한다.
+
+| 동작 | 프레임당 이동(px) |
+|------|-----------------|
+| Walk | 5 |
+| Run | 10 |
+| Run Fast | 16 |
+| Skate Run | 12 |
+
+- 화면 오른쪽 끝을 벗어나면 왼쪽 끝에서 다시 등장 (wrap)
+- 5회 반복 사이에도 x 위치를 유지해 끊김 없이 이어진다
+- 나머지 동작(Spin Dash, Ball Roll, Idle 등)은 화면 중앙 고정
+
+---
+
 ## 재생 로직
 
 ```
 for each animation in ANIMATIONS:
+    x = 화면 왼쪽 끝 (이동 동작) or CX (고정 동작)
     for _ in range(5):          # 5회 반복
-        play_once(animation)
+        x = play_once(animation, start_x=x)
     delay(1.0)                  # 1초 정지
 
 → 전체 완료 후 처음으로 돌아가 무한 반복
 ```
 
-- `play_once`: 프레임 0 → 마지막을 1사이클 재생
+- `play_once(anim, start_x)`: 프레임 0 → 마지막을 1사이클 재생, 최종 x 반환
+- 이동 동작은 매 프레임 x += speed, 오른쪽 끝 초과 시 왼쪽 끝으로 wrap
 - 프레임 간격: 동작별 delay 값 사용
 
 ---
@@ -87,6 +106,14 @@ for each animation in ANIMATIONS:
 ```python
 CANVAS_W, CANVAS_H = 1200, 800
 CX, CY = 600, 400
+
+# 이동 동작: 이름 → 프레임당 이동 픽셀
+MOVING_SPEED = {
+    'Walk':     5,
+    'Run':      10,
+    'Run Fast': 16,
+    'Skate Run': 12,
+}
 SCALE  = 3
 H_IMG  = 525          # 이미지 높이 (pico_bot 계산 기준)
 
@@ -107,24 +134,38 @@ ANIMATIONS = [
     ('Standing',      56, 43,  96, 29,  2, 0.20),
 ]
 
-def draw_frame(image, pico_bot, fh, x_off, fw, frame_idx):
-    """단일 프레임을 pico2d clip_draw로 SCALE배 확대해 중앙에 그린다."""
-    clip_x = x_off + frame_idx * fw
-    image.clip_draw(clip_x, pico_bot, fw, fh,
-                    CX, CY, fw * SCALE, fh * SCALE)
+def draw_frame(pico_bot, fh, clip_x, fw, draw_x=None):
+    """단일 프레임을 SCALE배 확대해 draw_x(없으면 CX)에 그린다."""
+    x = draw_x if draw_x is not None else CX
+    image.clip_draw(clip_x, pico_bot, fw, fh, x, CY, fw * SCALE, fh * SCALE)
 
-def play_once(image, anim):
+def play_once(anim, start_x=None):
+    """클립을 1회 재생. 이동 동작이면 start_x에서 출발해 최종 x를 반환."""
     name, pico_bot, fh, x_off, fw, frame_count, frame_delay = anim
+    speed = MOVING_SPEED.get(name, 0)
+    x = start_x if (speed and start_x is not None) else (-(fw * SCALE) // 2 if speed else CX)
+    xs = FRAME_X.get(name)
     for f in range(frame_count):
+        clip_x = xs[f] if xs else x_off + f * fw
         clear_canvas()
-        draw_frame(image, pico_bot, fh, x_off, fw, f)
+        draw_frame(pico_bot, fh, clip_x, fw, x if speed else None)
+        font.draw(20, CANVAS_H - 20, name, (255, 255, 0))
         update_canvas()
         delay(frame_delay)
-        get_events()
+        handle_events()
+        if speed:
+            x += speed
+            if x > CANVAS_W + fw * SCALE // 2:
+                x = -(fw * SCALE) // 2
+    return x
 
-def play_animation(image, anim, repeat=5, pause_sec=1.0):
+def play_animation(anim, repeat=5, pause_sec=1.0):
+    """클립을 repeat회 재생 후 pause_sec 정지. 이동 동작은 x를 이어서 유지."""
+    name, _, _, _, fw, _, _ = anim
+    speed = MOVING_SPEED.get(name, 0)
+    x = -(fw * SCALE) // 2 if speed else None
     for _ in range(repeat):
-        play_once(image, anim)
+        x = play_once(anim, x)
     delay(pause_sec)
 ```
 
