@@ -15,6 +15,7 @@ ANIMATIONS = [
     ('Spin (small)', 207, 35,   1, 35,  2, 0.08),
     ('Spin Attack',  207, 35,  72, 50,  4, 0.07),
     ('Idle',         154, 45,   1, 30,  6, 0.12),
+    ('Hurt',         154, 45, 184, 48,  2, 0.10),
 ]
 
 def draw_frame(pico_bot, fh, x_off, fw, frame_idx):
