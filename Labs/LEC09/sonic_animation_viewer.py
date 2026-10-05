@@ -48,9 +48,10 @@ def handle_events():
             close_canvas(); exit()
 
 
-def draw_frame(pico_bot, fh, clip_x, fw):
+def draw_frame(pico_bot, fh, clip_x, fw, draw_x=None):
+    x = draw_x if draw_x is not None else CX
     image.clip_draw(clip_x, pico_bot, fw, fh,
-                    CX, CY, fw * SCALE, fh * SCALE)
+                    x, CY, fw * SCALE, fh * SCALE)
 
 
 def play_once(anim):
