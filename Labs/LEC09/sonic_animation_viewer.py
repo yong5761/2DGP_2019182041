@@ -4,7 +4,6 @@ CANVAS_W, CANVAS_H = 1200, 800
 CX, CY = 600, 400
 SCALE  = 3
 
-# Run / Skate Run: 프레임 간격이 불균일해 x_starts를 직접 지정
 RUN_X   = [8, 37, 65, 97, 135, 170, 206, 238, 263, 295, 334, 370]
 SKATE_X = [1, 31, 64,  99, 136, 176, 217, 254]
 
@@ -24,6 +23,15 @@ ANIMATIONS = [
     ('Victory',       56, 43,   6, 47,  2, 0.15),
     ('Standing',      56, 43,  96, 29,  2, 0.20),
 ]
+
+def handle_events():
+    for event in get_events():
+        if event.type == SDL_QUIT:
+            close_canvas()
+            exit()
+        if event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            close_canvas()
+            exit()
 
 def draw_frame(pico_bot, fh, x_off, fw, frame_idx):
     clip_x = x_off + frame_idx * fw
@@ -51,7 +59,7 @@ def play_once(anim):
             draw_frame(pico_bot, fh, x_off, fw, f)
         update_canvas()
         delay(frame_delay)
-        get_events()
+        handle_events()
 
 def play_animation(anim, repeat=5, pause_sec=1.0):
     for _ in range(repeat):
