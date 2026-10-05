@@ -1,3 +1,6 @@
+import os
+
+import pico2d as _p2d
 from pico2d import *
 
 CANVAS_W, CANVAS_H = 1200, 800
@@ -49,7 +52,7 @@ def play_once(anim):
         clip_x = xs[f] if xs else x_off + f * fw
         clear_canvas()
         draw_frame(pico_bot, fh, clip_x, fw)
-        draw_text(20, CANVAS_H - 30, name)
+        font.draw(20, CANVAS_H - 20, name, (255, 255, 0))
         update_canvas()
         delay(frame_delay)
         handle_events()
@@ -63,6 +66,9 @@ def play_animation(anim, repeat=5, pause_sec=1.0):
 
 open_canvas(CANVAS_W, CANVAS_H)
 image = load_image('sonic-sprite.png')
+
+_font_path = os.path.join(os.path.dirname(_p2d.__file__), 'data', 'ConsolaMalgun.ttf')
+font = Font(_font_path, 24)
 
 while True:
     for anim in ANIMATIONS:
