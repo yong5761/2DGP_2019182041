@@ -75,8 +75,11 @@ def play_once(anim, start_x=None):
 
 
 def play_animation(anim, repeat=5, pause_sec=1.0):
+    name, _, _, _, fw, _, _ = anim
+    speed = MOVING_SPEED.get(name, 0)
+    x = -(fw * SCALE) // 2 if speed else None
     for _ in range(repeat):
-        play_once(anim)
+        x = play_once(anim, x)
     delay(pause_sec)
 
 
