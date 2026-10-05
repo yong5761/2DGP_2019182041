@@ -12,6 +12,7 @@ ANIMATIONS = [
     ('Spin Dash',    325, 33,   1, 33,  9, 0.05),
     ('Ball Roll',    292, 27,   1, 35,  6, 0.06),
     ('Insta-Shield', 251, 36,   1, 37,  6, 0.06),
+    ('Spin (small)', 207, 35,   1, 35,  2, 0.08),
 ]
 
 def draw_frame(pico_bot, fh, x_off, fw, frame_idx):
