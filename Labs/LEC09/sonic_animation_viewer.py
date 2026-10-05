@@ -5,7 +5,9 @@ CX, CY = 600, 400
 SCALE  = 3
 
 # (name, pico_bot, fh, x_off, fw, frame_count, delay)
-ANIMATIONS = []
+ANIMATIONS = [
+    ('Walk',         447, 39,   1, 30, 11, 0.10),
+]
 
 def draw_frame(pico_bot, fh, x_off, fw, frame_idx):
     clip_x = x_off + frame_idx * fw
