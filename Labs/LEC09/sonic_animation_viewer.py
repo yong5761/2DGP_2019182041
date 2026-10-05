@@ -7,4 +7,6 @@ open_canvas(CANVAS_W, CANVAS_H)
 image = load_image('sonic-sprite.png')
 
 while True:
+    clear_canvas()
+    update_canvas()
     get_events()
