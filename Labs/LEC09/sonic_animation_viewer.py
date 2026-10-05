@@ -9,10 +9,14 @@ SCALE    = 3
 
 # 이동 동작: 이름 → 프레임당 이동 픽셀 (없으면 화면 중앙 고정)
 MOVING_SPEED = {
-    'Walk':     5,
-    'Run':      10,
-    'Run Fast': 16,
-    'Skate Run': 12,
+    'Walk':         5,
+    'Run':         10,
+    'Run Fast':    16,
+    'Spin Dash':   12,
+    'Ball Roll':    8,
+    'Insta-Shield': 9,
+    'Spin (small)': 7,
+    'Skate Run':   12,
 }
 
 # 불균일 간격 행: 각 프레임의 x 시작좌표를 직접 지정
