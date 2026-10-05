@@ -1,13 +1,15 @@
 from pico2d import *
 
 CANVAS_W, CANVAS_H = 1200, 800
-CX, CY = 600, 400
-SCALE  = 3
+CX, CY   = 600, 400
+SCALE    = 3
 
+# 불균일 간격 행: 각 프레임의 x 시작좌표를 직접 지정
 RUN_X   = [8, 37, 65, 97, 135, 170, 206, 238, 263, 295, 334, 370]
 SKATE_X = [1, 31, 64,  99, 136, 176, 217, 254]
 
-# (name, pico_bot, fh, x_off, fw, frame_count, delay)
+# (name, pico_bot, fh, x_off, fw, frame_count, frame_delay)
+# pico_bot: pico2d 하단-y 좌표 = 524 - PIL_bottom
 ANIMATIONS = [
     ('Walk',         447, 39,   1, 30, 11, 0.10),
     ('Run',          407, 39,   8, 33, 12, 0.07),
@@ -24,51 +26,42 @@ ANIMATIONS = [
     ('Standing',      56, 43,  96, 29,  2, 0.20),
 ]
 
+FRAME_X = {'Run': RUN_X, 'Skate Run': SKATE_X}
+
+
 def handle_events():
     for event in get_events():
         if event.type == SDL_QUIT:
-            close_canvas()
-            exit()
+            close_canvas(); exit()
         if event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            close_canvas()
-            exit()
+            close_canvas(); exit()
 
-def draw_frame(pico_bot, fh, x_off, fw, frame_idx):
-    clip_x = x_off + frame_idx * fw
+
+def draw_frame(pico_bot, fh, clip_x, fw):
     image.clip_draw(clip_x, pico_bot, fw, fh,
                     CX, CY, fw * SCALE, fh * SCALE)
 
-def draw_frame_at(pico_bot, fh, fw, clip_x):
-    image.clip_draw(clip_x, pico_bot, fw, fh,
-                    CX, CY, fw * SCALE, fh * SCALE)
 
 def play_once(anim):
     name, pico_bot, fh, x_off, fw, frame_count, frame_delay = anim
-    if name == 'Run':
-        xs = RUN_X
-    elif name == 'Skate Run':
-        xs = SKATE_X
-    else:
-        xs = None
-
+    xs = FRAME_X.get(name)
     for f in range(frame_count):
+        clip_x = xs[f] if xs else x_off + f * fw
         clear_canvas()
-        if xs:
-            draw_frame_at(pico_bot, fh, fw, xs[f])
-        else:
-            draw_frame(pico_bot, fh, x_off, fw, f)
+        draw_frame(pico_bot, fh, clip_x, fw)
         draw_text(20, CANVAS_H - 30, name)
         update_canvas()
         delay(frame_delay)
         handle_events()
+
 
 def play_animation(anim, repeat=5, pause_sec=1.0):
     for _ in range(repeat):
         play_once(anim)
     delay(pause_sec)
 
-open_canvas(CANVAS_W, CANVAS_H)
 
+open_canvas(CANVAS_W, CANVAS_H)
 image = load_image('sonic-sprite.png')
 
 while True:
