@@ -21,6 +21,11 @@ def play_once(anim):
         delay(frame_delay)
         get_events()
 
+def play_animation(anim, repeat=5, pause_sec=1.0):
+    for _ in range(repeat):
+        play_once(anim)
+    delay(pause_sec)
+
 open_canvas(CANVAS_W, CANVAS_H)
 
 image = load_image('sonic-sprite.png')
