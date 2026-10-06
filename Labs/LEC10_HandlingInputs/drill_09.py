@@ -76,3 +76,8 @@ def update():
     y = max(MARGIN, min(TUK_H - MARGIN, y))
 
     frame = (frame + 1) % FRAME_COUNT
+
+# ── 렌더링 ────────────────────────────────────────────────────────────
+def draw():
+    clear_canvas()
+    bg.draw(TUK_W // 2, TUK_H // 2)   # 배경은 캔버스 중앙에 맞춰 그리기
