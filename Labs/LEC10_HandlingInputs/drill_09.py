@@ -81,3 +81,13 @@ def update():
 def draw():
     clear_canvas()
     bg.draw(TUK_W // 2, TUK_H // 2)   # 배경은 캔버스 중앙에 맞춰 그리기
+
+    dx = (1 if keys[SDLK_RIGHT] else 0) - (1 if keys[SDLK_LEFT] else 0)
+    dy = (1 if keys[SDLK_UP]    else 0) - (1 if keys[SDLK_DOWN]  else 0)
+    moving = (dx != 0 or dy != 0)
+
+    # 정지 상태: IDLE 행 (Row3, clip_y=300)
+    if not moving:
+        clip_x = frame * CELL
+        clip_y = ROW_IDLE * CELL          # 300
+        spr.clip_draw(clip_x, clip_y, CELL, CELL, x, y)
