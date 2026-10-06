@@ -103,3 +103,5 @@ def draw():
         clip_y = ROW_RUN_LEFT * CELL      # 0
         spr.clip_draw(clip_x, clip_y, CELL, CELL, x, y)
 
+    update_canvas()
+
