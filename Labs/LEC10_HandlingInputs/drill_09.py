@@ -70,3 +70,7 @@ def update():
         facing = 'right'
     elif dx < 0:
         facing = 'left'
+
+    # 화면 경계 클램핑: 스프라이트 중심 기준으로 MARGIN 이내 유지
+    x = max(MARGIN, min(TUK_W - MARGIN, x))
+    y = max(MARGIN, min(TUK_H - MARGIN, y))
