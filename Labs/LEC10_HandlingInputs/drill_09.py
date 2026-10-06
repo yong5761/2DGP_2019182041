@@ -1,0 +1,20 @@
+# Drill #9 - 소년 상하 좌우 이동 및 방향 바꾸기
+from pico2d import *
+
+# ── 상수 ──────────────────────────────────────────────────────────────
+TUK_W, TUK_H = 1280, 1024   # 캔버스 크기
+
+SPEED        = 5             # 이동 속도 (px/프레임)
+MARGIN       = 50            # 화면 경계 여유 (스프라이트 반크기)
+CELL         = 100           # 스프라이트 셀 한 변 크기
+FRAME_COUNT  = 8             # 행당 프레임 수
+
+# 스프라이트 행 인덱스 (pico2d: y=0이 화면 하단)
+# animation_sheet.png 행 구성
+#   Row 3 (clip_y=300) : 최상단 → IDLE
+#   Row 2 (clip_y=200) : WALK (미사용)
+#   Row 1 (clip_y=100) : RUN 오른쪽
+#   Row 0 (clip_y=  0) : RUN 왼쪽
+ROW_IDLE      = 3
+ROW_RUN_RIGHT = 1
+ROW_RUN_LEFT  = 0
