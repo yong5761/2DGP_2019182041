@@ -29,3 +29,12 @@ running = True
 x, y    = TUK_W // 2, TUK_H // 2   # 초기 위치: 화면 중앙
 frame   = 0                          # 현재 애니메이션 프레임 인덱스
 facing  = 'right'                    # 마지막 좌우 방향 ('right' | 'left')
+
+# 키 누름 상태: KEYDOWN → True, KEYUP → False
+# 딕셔너리로 관리해 다중 키 동시 입력을 정확히 처리
+keys = {
+    SDLK_RIGHT: False,
+    SDLK_LEFT:  False,
+    SDLK_UP:    False,
+    SDLK_DOWN:  False,
+}
