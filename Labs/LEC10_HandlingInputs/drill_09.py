@@ -53,3 +53,14 @@ def handle_events():
         elif event.type == SDL_KEYUP:
             if event.key in keys:
                 keys[event.key] = False
+
+# ── 업데이트 ──────────────────────────────────────────────────────────
+def update():
+    global x, y, frame, facing
+
+    # 수평·수직 이동량 계산: -1 / 0 / +1
+    dx = (1 if keys[SDLK_RIGHT] else 0) - (1 if keys[SDLK_LEFT] else 0)
+    dy = (1 if keys[SDLK_UP]    else 0) - (1 if keys[SDLK_DOWN]  else 0)
+
+    x += dx * SPEED
+    y += dy * SPEED
