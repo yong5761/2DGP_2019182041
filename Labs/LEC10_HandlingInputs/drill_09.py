@@ -105,3 +105,11 @@ def draw():
 
     update_canvas()
 
+# ── 메인 루프 ─────────────────────────────────────────────────────────
+while running:
+    handle_events()
+    update()
+    draw()
+    delay(0.05)        # ~20 fps
+
+close_canvas()
