@@ -23,3 +23,9 @@ ROW_RUN_LEFT  = 0
 open_canvas(TUK_W, TUK_H)
 bg  = load_image('TUK_GROUND.png')
 spr = load_image('animation_sheet.png')
+
+# ── 전역 상태 변수 ────────────────────────────────────────────────────
+running = True
+x, y    = TUK_W // 2, TUK_H // 2   # 초기 위치: 화면 중앙
+frame   = 0                          # 현재 애니메이션 프레임 인덱스
+facing  = 'right'                    # 마지막 좌우 방향 ('right' | 'left')
