@@ -29,6 +29,7 @@ running = True
 x, y    = TUK_W // 2, TUK_H // 2   # 초기 위치: 화면 중앙
 frame   = 0                          # 현재 애니메이션 프레임 인덱스
 facing  = 'right'                    # 마지막 좌우 방향 ('right' | 'left')
+moving  = False                      # 이동 중 여부 (update → draw 공유)
 
 # 키 누름 상태: KEYDOWN → True, KEYUP → False
 # 딕셔너리로 관리해 다중 키 동시 입력을 정확히 처리
@@ -56,11 +57,13 @@ def handle_events():
 
 # ── 업데이트 ──────────────────────────────────────────────────────────
 def update():
-    global x, y, frame, facing
+    global x, y, frame, facing, moving
 
     # 수평·수직 이동량 계산: -1 / 0 / +1
     dx = (1 if keys[SDLK_RIGHT] else 0) - (1 if keys[SDLK_LEFT] else 0)
     dy = (1 if keys[SDLK_UP]    else 0) - (1 if keys[SDLK_DOWN]  else 0)
+
+    moving = (dx != 0 or dy != 0)
 
     x += dx * SPEED
     y += dy * SPEED
@@ -81,10 +84,6 @@ def update():
 def draw():
     clear_canvas()
     bg.draw(TUK_W // 2, TUK_H // 2)   # 배경은 캔버스 중앙에 맞춰 그리기
-
-    dx = (1 if keys[SDLK_RIGHT] else 0) - (1 if keys[SDLK_LEFT] else 0)
-    dy = (1 if keys[SDLK_UP]    else 0) - (1 if keys[SDLK_DOWN]  else 0)
-    moving = (dx != 0 or dy != 0)
 
     # 정지 상태: IDLE 행 (Row3, clip_y=300)
     if not moving:
