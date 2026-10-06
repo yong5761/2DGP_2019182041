@@ -1,0 +1,107 @@
+# Drill #9 - 소년 상하 좌우 이동 및 방향 바꾸기
+from pico2d import *
+
+# ── 상수 ──────────────────────────────────────────────────────────────
+TUK_W, TUK_H = 1280, 1024   # 캔버스 크기
+
+SPEED        = 5             # 이동 속도 (px/프레임)
+MARGIN       = 50            # 화면 경계 여유 (스프라이트 반크기)
+CELL         = 100           # 스프라이트 셀 한 변 크기
+FRAME_COUNT  = 8             # 행당 프레임 수
+
+# 스프라이트 행 인덱스 (pico2d: y=0이 화면 하단)
+# animation_sheet.png 행 구성
+#   Row 3 (clip_y=300) : 최상단 → IDLE
+#   Row 2 (clip_y=200) : WALK (미사용)
+#   Row 1 (clip_y=100) : RUN 오른쪽
+#   Row 0 (clip_y=  0) : RUN 왼쪽
+ROW_IDLE      = 3
+ROW_RUN_RIGHT = 1
+ROW_RUN_LEFT  = 0
+
+# ── 캔버스·이미지 로드 ─────────────────────────────────────────────────
+open_canvas(TUK_W, TUK_H)
+bg  = load_image('TUK_GROUND.png')
+spr = load_image('animation_sheet.png')
+
+# ── 전역 상태 변수 ────────────────────────────────────────────────────
+running = True
+x, y    = TUK_W // 2, TUK_H // 2   # 초기 위치: 화면 중앙
+frame   = 0                          # 현재 애니메이션 프레임 인덱스
+facing  = 'right'                    # 마지막 좌우 방향 ('right' | 'left')
+moving  = False                      # 이동 중 여부 (update → draw 공유)
+
+# 키 누름 상태: KEYDOWN → True, KEYUP → False
+# 딕셔너리로 관리해 다중 키 동시 입력을 정확히 처리
+keys = {
+    SDLK_RIGHT: False,
+    SDLK_LEFT:  False,
+    SDLK_UP:    False,
+    SDLK_DOWN:  False,
+}
+
+# ── 이벤트 핸들러 ─────────────────────────────────────────────────────
+def handle_events():
+    global running
+    for event in get_events():
+        if event.type == SDL_QUIT:
+            running = False
+        elif event.type == SDL_KEYDOWN:
+            if event.key == SDLK_ESCAPE:
+                running = False
+            elif event.key in keys:
+                keys[event.key] = True
+        elif event.type == SDL_KEYUP:
+            if event.key in keys:
+                keys[event.key] = False
+
+# ── 업데이트 ──────────────────────────────────────────────────────────
+def update():
+    global x, y, frame, facing, moving
+
+    # 수평·수직 이동량 계산: -1 / 0 / +1
+    dx = (1 if keys[SDLK_RIGHT] else 0) - (1 if keys[SDLK_LEFT] else 0)
+    dy = (1 if keys[SDLK_UP]    else 0) - (1 if keys[SDLK_DOWN]  else 0)
+
+    moving = (dx != 0 or dy != 0)
+
+    x += dx * SPEED
+    y += dy * SPEED
+
+    # 좌우 이동이 있을 때만 facing 갱신 (상하 이동 시 마지막 방향 유지)
+    if dx > 0:
+        facing = 'right'
+    elif dx < 0:
+        facing = 'left'
+
+    # 화면 경계 클램핑: 스프라이트 중심 기준으로 MARGIN 이내 유지
+    x = max(MARGIN, min(TUK_W - MARGIN, x))
+    y = max(MARGIN, min(TUK_H - MARGIN, y))
+
+    frame = (frame + 1) % FRAME_COUNT
+
+# ── 렌더링 ────────────────────────────────────────────────────────────
+def draw():
+    clear_canvas()
+    bg.draw(TUK_W // 2, TUK_H // 2)   # 배경은 캔버스 중앙에 맞춰 그리기
+
+    # 상태에 따라 스프라이트 행 결정
+    if not moving:
+        row = ROW_IDLE          # 정지: Row3 (clip_y=300)
+    elif facing == 'right':
+        row = ROW_RUN_RIGHT     # 오른쪽 이동: Row1 (clip_y=100)
+    else:
+        row = ROW_RUN_LEFT      # 왼쪽 이동:  Row0 (clip_y=0)
+
+    spr.clip_draw(frame * CELL, row * CELL, CELL, CELL, x, y)
+
+    update_canvas()
+
+# ── 메인 루프 ─────────────────────────────────────────────────────────
+while running:
+    handle_events()
+    update()
+    draw()
+    delay(0.05)        # ~20 fps
+
+close_canvas()
