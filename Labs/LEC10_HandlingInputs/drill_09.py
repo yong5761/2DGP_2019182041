@@ -18,3 +18,8 @@ FRAME_COUNT  = 8             # 행당 프레임 수
 ROW_IDLE      = 3
 ROW_RUN_RIGHT = 1
 ROW_RUN_LEFT  = 0
+
+# ── 캔버스·이미지 로드 ─────────────────────────────────────────────────
+open_canvas(TUK_W, TUK_H)
+bg  = load_image('TUK_GROUND.png')
+spr = load_image('animation_sheet.png')
