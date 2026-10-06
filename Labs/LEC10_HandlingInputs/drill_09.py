@@ -85,22 +85,15 @@ def draw():
     clear_canvas()
     bg.draw(TUK_W // 2, TUK_H // 2)   # 배경은 캔버스 중앙에 맞춰 그리기
 
-    # 정지 상태: IDLE 행 (Row3, clip_y=300)
+    # 상태에 따라 스프라이트 행 결정
     if not moving:
-        clip_x = frame * CELL
-        clip_y = ROW_IDLE * CELL          # 300
-        spr.clip_draw(clip_x, clip_y, CELL, CELL, x, y)
-    # 이동 중 & 오른쪽 방향: Row1 (clip_y=100)
+        row = ROW_IDLE          # 정지: Row3 (clip_y=300)
     elif facing == 'right':
-        clip_x = frame * CELL
-        clip_y = ROW_RUN_RIGHT * CELL     # 100
-        spr.clip_draw(clip_x, clip_y, CELL, CELL, x, y)
-
-    # 이동 중 & 왼쪽 방향: Row0 (clip_y=0)
+        row = ROW_RUN_RIGHT     # 오른쪽 이동: Row1 (clip_y=100)
     else:
-        clip_x = frame * CELL
-        clip_y = ROW_RUN_LEFT * CELL      # 0
-        spr.clip_draw(clip_x, clip_y, CELL, CELL, x, y)
+        row = ROW_RUN_LEFT      # 왼쪽 이동:  Row0 (clip_y=0)
+
+    spr.clip_draw(frame * CELL, row * CELL, CELL, CELL, x, y)
 
     update_canvas()
 
