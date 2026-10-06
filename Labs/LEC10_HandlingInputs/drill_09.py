@@ -91,3 +91,9 @@ def draw():
         clip_x = frame * CELL
         clip_y = ROW_IDLE * CELL          # 300
         spr.clip_draw(clip_x, clip_y, CELL, CELL, x, y)
+
+    # 이동 중 & 오른쪽 방향: Row1 (clip_y=100)
+    elif facing == 'right':
+        clip_x = frame * CELL
+        clip_y = ROW_RUN_RIGHT * CELL     # 100
+        spr.clip_draw(clip_x, clip_y, CELL, CELL, x, y)
