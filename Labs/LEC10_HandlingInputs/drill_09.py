@@ -64,3 +64,9 @@ def update():
 
     x += dx * SPEED
     y += dy * SPEED
+
+    # 좌우 이동이 있을 때만 facing 갱신 (상하 이동 시 마지막 방향 유지)
+    if dx > 0:
+        facing = 'right'
+    elif dx < 0:
+        facing = 'left'
